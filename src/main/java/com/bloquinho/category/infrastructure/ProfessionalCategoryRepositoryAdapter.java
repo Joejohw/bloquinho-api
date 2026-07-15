@@ -3,6 +3,7 @@ package com.bloquinho.category.infrastructure;
 import com.bloquinho.category.domain.ProfessionalCategory;
 import com.bloquinho.category.domain.ProfessionalCategoryRepository;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -18,6 +19,11 @@ public class ProfessionalCategoryRepositoryAdapter implements ProfessionalCatego
         return repository.findAllByActiveTrueOrderByNameAsc().stream()
             .map(this::toDomain)
             .toList();
+    }
+
+    @Override
+    public Optional<ProfessionalCategory> findActiveBySlug(String slug) {
+        return repository.findBySlugAndActiveTrue(slug).map(this::toDomain);
     }
 
     private ProfessionalCategory toDomain(ProfessionalCategoryJpaEntity entity) {

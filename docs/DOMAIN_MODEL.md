@@ -12,3 +12,9 @@ A public identifier is an address, not an authorization token. Access to private
 The category domain exposes `publicId`, `name`, `slug`, `description`, and `active`. Persistence uses `professional_categories`; public reads apply `active = true` and order by `name ASC`. The public response omits the internal `id`, active flag, and timestamps.
 
 Migration V2 adds ten generic Brazilian service categories as initial product reference data. It does not contain professional or customer data.
+
+## Professional
+
+The professional domain contains public contact and catalog information while retaining the internal database ID inside persistence. Public category details expose only `publicId`, name, optional business name and description, demo WhatsApp, validated Instagram URL, city, and state.
+
+The read query joins `professional_categories`, `professional_category_links`, and `professionals`, requires both category and professional to be active, and orders professionals by name. Migration V3 adds ten entirely fictional development professionals and fourteen category links; some professionals demonstrate multiple categories. No tracking occurs when contact links are used.

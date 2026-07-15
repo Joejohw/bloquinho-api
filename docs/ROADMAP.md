@@ -4,6 +4,7 @@
 
 - Repository foundation
 - Public active-category listing (completed)
+- Public category details with active professionals (completed)
 - Category administration and professionals
 - Public catalog and WhatsApp contact
 - Anonymous tracking
