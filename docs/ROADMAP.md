@@ -3,7 +3,8 @@
 ## Phase 1
 
 - Repository foundation
-- Categories and professionals
+- Public active-category listing (completed)
+- Category administration and professionals
 - Public catalog and WhatsApp contact
 - Anonymous tracking
 
