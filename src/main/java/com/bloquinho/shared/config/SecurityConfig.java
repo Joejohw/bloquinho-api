@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -15,9 +15,17 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 public class SecurityConfig {
     @Bean
-    SecurityFilterChain security(HttpSecurity http) throws Exception {
+    InMemoryUserDetailsManager users() {
+        return new InMemoryUserDetailsManager();
+    }
+
+    @Bean
+    SecurityFilterChain security(
+        HttpSecurity http,
+        CorsConfigurationSource corsConfigurationSource
+    ) throws Exception {
         return http
-            .cors(Customizer.withDefaults())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -29,7 +37,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    CorsConfigurationSource cors(
+    CorsConfigurationSource corsConfigurationSource(
         @Value("${app.cors.admin-origin}") String adminOrigin,
         @Value("${app.cors.public-origin}") String publicOrigin
     ) {

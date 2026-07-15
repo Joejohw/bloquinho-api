@@ -2,7 +2,7 @@
 
 ## Scope
 
-The `bloquinho-api`, `bloquinho-admin`, and `bloquinho-web` repositories were reviewed at commits `721b064`, `6d03063`, and `7657f45`. All were on `main`, clean at the start, and had no configured remotes.
+The `bloquinho-api`, `bloquinho-admin`, and `bloquinho-web` repositories were fully validated from commits `cffe339`, `8738b6e`, and `41fd415`. All were on `main`, clean at the start, and had no configured remotes.
 
 ## Findings and corrections
 
@@ -14,18 +14,23 @@ The `bloquinho-api`, `bloquinho-admin`, and `bloquinho-web` repositories were re
 - Normalized the initial PostgreSQL migration, named relationship constraints, retained timezone-aware timestamps, and removed indexes duplicated by unique constraints.
 - Confirmed Docker uses multi-stage builds, Java 21 for the API, Node 24 for Angular, Nginx SPA fallback, and no embedded secrets. The Angular output paths match the configured project names but remain unverified without a build.
 - Confirmed CI performs verification only and contains no deploy or image-push steps.
+- Replaced the raw Flyway dependency with the Spring Boot 4 Flyway starter, which enabled migration auto-configuration.
+- Prevented Spring Security from generating a default user and password, and explicitly connected the CORS source to the Security 7 filter chain.
+- Corrected the PostgreSQL 18 volume mount from `/var/lib/postgresql/data` to `/var/lib/postgresql`.
+- Added the Angular 22 test runner dependencies, development build configurations, and one root-component foundation test per application. Removed the invalid lint scripts because no lint builder is configured.
 
-## Compatibility items not verified
+## Validated compatibility
 
-- Spring Boot 4.1.0, springdoc 3.0.1, Testcontainers 2.0.2, Angular 22, TypeScript 6, Node 24, and their exact transitive compatibility were not resolved or compiled locally.
-- Docker image tags and Angular output directories were reviewed statically only.
+- Java 21.0.11, Maven 3.9 in the official Temurin 21 image, Spring Boot 4.1.0, Spring Security 7.1.0, Flyway 12.4.0, PostgreSQL 18.4, and springdoc 3.0.1 resolved, compiled, and started together.
+- Node 24.18.0 and npm 11.16.0 resolved Angular 22.0.x and TypeScript 6.0.x. Strict type-check, Vitest, production builds, development servers, and proxies passed for both applications.
+- Real browser output directories are `dist/bloquinho-admin/browser` and `dist/bloquinho-web/browser`; both Dockerfiles already reference them.
 
 ## Validation
 
-JSON, YAML, XML structure, SQL, TypeScript imports, route targets, dictionary keys, generated artifacts, environment files, and common secret patterns were inspected statically. `git diff --check` and repository status checks were run in all repositories.
+Maven dependency resolution, tests, package generation, PostgreSQL health, Flyway V1, schema constraints, public/health/OpenAPI/admin endpoints, CORS, Angular dependency installation, strict type-check, tests, builds, local servers, and proxies were validated. Port 8080 and PostgreSQL port 5432 were already occupied locally, so isolated validation used ports 8081 and 5433 without stopping unrelated services.
 
-The intentionally excluded commands include dependency installation, builds, tests, application startup, migrations, Docker builds, Compose startup, pushes, and deployment.
+Three low-severity npm audit findings remain for review. No automatic audit fix was applied.
 
 ## Recommended next slice
 
-After dependency resolution and compilation are allowed, verify the foundation in CI and then implement the read-only public category catalog end to end as the first vertical slice.
+Run the same commands in CI, then implement the read-only public category catalog end to end as the first vertical slice.

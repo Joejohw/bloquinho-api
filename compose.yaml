@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: bloquinho
       POSTGRES_PASSWORD: bloquinho
     ports: ["5432:5432"]
-    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    volumes: ["postgres-data:/var/lib/postgresql"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U bloquinho -d bloquinho"]
       interval: 5s
