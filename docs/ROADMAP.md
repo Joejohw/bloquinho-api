@@ -1,26 +1,72 @@
-# Roadmap
+# MVP roadmap
 
-## Phase 1
+States follow [Scope and requirements](SCOPE_AND_REQUIREMENTS.md). Sequencing is dependency-driven; it is not a delivery-date commitment.
 
-- Repository foundation
-- Public active-category listing (completed)
-- Public category details with active professionals (completed)
-- Category administration and professionals
-- Public catalog and WhatsApp contact
-- Anonymous tracking
+## Epic 0 — Foundation
 
-## Phase 2
+- **State:** `PARCIALMENTE_IMPLEMENTADO`.
+- **Objective:** reproducible, safe base for vertical delivery.
+- **Dependencies:** none.
+- **Delivered:** Java/Spring modular monolith; Maven Wrapper; PostgreSQL/Flyway V1–V3; CI `clean verify`; Testcontainers; public DTOs; public ID generator; default-deny/CORS base; health and OpenAPI.
+- **Delivered:** malformed category slug returns standardized 400 Problem Details; missing/inactive category remains 404; public status/category access, admin denial, and configured CORS preflight have security tests.
+- **Remaining:** category repository integration; error standardization beyond the current public category contract; demo-data separation; production profiles.
+- **Acceptance:** baseline green; current public behavior secured/tested; no accidental 500 for client validation; production data/config strategy approved.
+- **Risks:** demo migrations in every environment; incomplete error/security coverage.
 
-- Admin authentication and CRUD
-- Media management
-- Tracking dashboard and service requests
+## Epic 1 — Close the public API
 
-## Phase 3
+- **State:** `PARCIALMENTE_IMPLEMENTADO`.
+- **Objective:** complete and harden the direct public catalog before adding write flows.
+- **Dependencies:** Epic 0.
+- **Deliveries:** category JPA integration; remaining OpenAPI/filter-chain coverage; standardized errors for future public surfaces; individual active-professional profile; public contract alignment. Slug validation and minimum public/admin/CORS security coverage are complete.
+- **Acceptance:** RF-CAT-001/002, RF-PRO-001/008/009, RF-PUB-001–005 pass unit/controller/security/PostgreSQL tests.
+- **Risks:** backward-compatibility changes to errors; public pagination/photos decisions.
 
-- Professional access
-- Conversations, quotes, and documents
+## Epic 2 — Administrative identity
 
-## Phase 4
+- **State:** `PLANEJADO_MVP`.
+- **Objective:** allow Marcos to access protected operations safely.
+- **Dependencies:** Epic 0 security/error base; initial-admin decision.
+- **Deliveries:** AppUser persistence mapping; controlled bootstrap; login; active-user enforcement; access credential; refresh rotation; logout/revocation; `/me`; route protection; security audit events.
+- **Acceptance:** RF-IDN-001–008 and RNF-SEC identity controls pass security/PostgreSQL tests; no default credential.
+- **Risks:** token transport/CSRF choice, brute force, secret/bootstrap operations.
 
-- Reviews, subscriptions, and monetization
-- Optional Go tracking service
+## Epic 3 — Administration
+
+- **State:** `PLANEJADO_MVP`.
+- **Objective:** maintain catalog content and relationships without database access.
+- **Dependencies:** Epic 2; ordering/photo/verification decisions as applicable.
+- **Deliveries:** category and professional list/detail/create/patch; activate/deactivate; association replacement/removal; optional approved positions; audit events; published-catalog preview.
+- **Acceptance:** RF-CAT-003–010, RF-PRO-002–007/010, RF-ASC-001–005, RF-AUD-001–005; public filtering remains correct.
+- **Risks:** manual-ordering schema, history semantics, validation/data quality.
+
+## Epic 4 — Referrals
+
+- **State:** `PLANEJADO_MVP`.
+- **Objective:** create shareable, contextual, lifecycle-controlled referral links.
+- **Dependencies:** Epics 1–3; expiration/category-scope decisions.
+- **Deliveries:** referral link domain/admin CRUD; category allowlist; public link access; active/expiration enforcement; origin propagation.
+- **Acceptance:** RF-REF-001–007 with admin/public/security/time-boundary/PostgreSQL tests.
+- **Risks:** empty allowlist semantics, expiration, link enumeration, reuse policy.
+
+## Epic 5 — Tracking and analytics
+
+- **State:** `PLANEJADO_MVP`.
+- **Objective:** measure visits, contact intent, and conversion by approved dimensions.
+- **Dependencies:** Epic 4; tracking failure, IP, anonymization, retention, and consent decisions.
+- **Deliveries:** minimized visits/clicks; channel/origin validation; period analytics; results by link/category/professional/channel; conversion; observability of tracking failure.
+- **Acceptance:** RF-TRK-001–006 and RF-ANL-001–007 reconcile with source events; privacy/security controls approved and tested.
+- **Risks:** LGPD, event loss/duplication, bot traffic, metric interpretation.
+
+## Epic 6 — Production readiness
+
+- **State:** `PLANEJADO_MVP`.
+- **Objective:** safely operate the approved MVP with real data.
+- **Dependencies:** Epics 0–5 and product/privacy decisions.
+- **Deliveries:** real-data onboarding; demo-data isolation; production profile and external secrets; Swagger/Actuator hardening; backup/restore; deploy/migration/rollback procedure; structured logs, correlation and metrics; security review.
+- **Acceptance:** complete [MVP acceptance checklist](SCOPE_AND_REQUIREMENTS.md#mvp-acceptance-checklist), restore rehearsal, repeatable deployment, operational ownership.
+- **Risks:** data migration, secret leakage, recovery gaps, unobserved failures.
+
+## After MVP
+
+`FUTURO`: only evidence-driven evolution after the pilot. `FORA_DO_ESCOPO` items listed in the product vision do not enter these epics without a new scope decision. `ServiceRequest` is added only if Alternative B changes from `DECISAO_PENDENTE` to approved.

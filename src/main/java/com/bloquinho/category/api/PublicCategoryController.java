@@ -44,7 +44,10 @@ public class PublicCategoryController {
     @GetMapping("/{slug}")
     public Map<String, PublicCategoryDetailsResponse> details(
         @PathVariable
-        @Pattern(regexp = "[a-z0-9]+(?:-[a-z0-9]+)*")
+        @Pattern(
+            regexp = "[a-z0-9]+(?:-[a-z0-9]+)*",
+            message = "Slug inválido."
+        )
         String slug
     ) {
         return Map.of("data", PublicCategoryDetailsResponse.from(getPublicCategoryDetails.execute(slug)));

@@ -1,6 +1,7 @@
 package com.bloquinho.category.api;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -76,6 +77,8 @@ class PublicCategoryControllerTest {
             .andExpect(jsonPath("$.data.professionals[0].email").doesNotExist())
             .andExpect(jsonPath("$.data.professionals[0].phone").doesNotExist())
             .andExpect(jsonPath("$.data.professionals[0].active").doesNotExist());
+
+        verify(detailsUseCase).execute("eletrica");
     }
 
     @Test
@@ -95,6 +98,22 @@ class PublicCategoryControllerTest {
             .thenThrow(new com.bloquinho.shared.error.ResourceNotFoundException("Category not found."));
 
         mockMvc.perform(get("/api/v1/public/categories/unknown-category"))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.title").value("Resource not found"))
+            .andExpect(jsonPath("$.status").value(404))
+            .andExpect(jsonPath("$.detail").value("Category not found."))
+            .andExpect(jsonPath("$.trace").doesNotExist());
+    }
+
+    @Test
+    void returnsNotFoundForAnInactiveCategory() throws Exception {
+        when(detailsUseCase.execute("inactive-category"))
+            .thenThrow(new com.bloquinho.shared.error.ResourceNotFoundException("Category not found."));
+
+        mockMvc.perform(get("/api/v1/public/categories/inactive-category"))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.title").value("Resource not found"))
+            .andExpect(jsonPath("$.status").value(404))
+            .andExpect(jsonPath("$.detail").value("Category not found."));
     }
 }
