@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public final class PublicIdGenerator {
     public static final int LENGTH = 21;
+    public static final String PATTERN = "[0-9A-Z_a-z-]{" + LENGTH + "}";
     private static final char[] ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-".toCharArray();
     private final SecureRandom random;
     public PublicIdGenerator() {

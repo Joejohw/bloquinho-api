@@ -54,7 +54,7 @@ Current modules:
 
 - `catalog` — `IMPLEMENTADO`: fixed public application status controller.
 - `category` — `IMPLEMENTADO`: API, application use cases, domain record/port, JPA entity/repository/adapter.
-- `professional` — `IMPLEMENTADO`: public DTO, category-scoped use case, domain record/port, JPA entity/repository/adapter.
+- `professional` — `IMPLEMENTADO`: category-scoped and individual-profile public DTOs/use cases, domain records/port, JPA entity/repository/adapter and profile projection.
 - `shared` — `IMPLEMENTADO`: security/CORS, Problem Details advice, public ID generator.
 
 Planned modules:

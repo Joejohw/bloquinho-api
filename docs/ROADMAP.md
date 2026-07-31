@@ -12,18 +12,19 @@ States follow [Scope and requirements](SCOPE_AND_REQUIREMENTS.md). Sequencing is
 - **Delivered:** the public category repository has PostgreSQL integration coverage for active filtering, inactive lookup, name ordering, slug lookup, mapping, and Flyway V1–V3.
 - **Delivered:** real-filter-chain coverage for public/default/admin routes, CORS, OpenAPI/Swagger and health-only Actuator exposure.
 - **Delivered:** unmapped public MVC routes return safe 404 Problem Details and unsupported methods return 405 Problem Details with `Allow`, instead of unexpected 500.
-- **Remaining:** error standardization beyond the current public category contract; demo-data separation; production profiles.
+- **Delivered:** individual active-professional profile with minimized fields, active categories ordered by name, public ID validation, and PostgreSQL/security/OpenAPI coverage.
+- **Remaining:** error standardization for future non-public surfaces; demo-data separation; production profiles.
 - **Acceptance:** baseline green; current public behavior secured/tested; no accidental 500 for client validation; production data/config strategy approved.
 - **Risks:** demo migrations in every environment; incomplete error/security coverage.
 
 ## Epic 1 — Close the public API
 
-- **State:** `PARCIALMENTE_IMPLEMENTADO`.
+- **State:** `CONCLUÍDO`.
 - **Objective:** complete and harden the direct public catalog before adding write flows.
 - **Dependencies:** Epic 0.
-- **Deliveries:** standardized errors for future public surfaces; individual active-professional profile; public contract alignment. Category JPA integration, slug/MVC routing errors, filter-chain, OpenAPI/Swagger, Actuator, and CORS coverage are complete for the current local behavior.
-- **Acceptance:** RF-CAT-001/002, RF-PRO-001/008/009, RF-PUB-001–005 pass unit/controller/security/PostgreSQL tests.
-- **Risks:** backward-compatibility changes to errors; public pagination/photos decisions.
+- **Deliveries:** current public status, active-category list/detail, active professionals by category, individual active-professional profile, minimized DTOs, standardized 400/404/405 errors, filter-chain, OpenAPI/Swagger, Actuator, CORS and PostgreSQL/Flyway coverage.
+- **Acceptance:** RF-CAT-001/002, RF-PRO-001/008/009 and RF-PUB-001–006 pass application/controller/error/security/OpenAPI/PostgreSQL tests; final audit is recorded in `EPIC_1_AUDIT.md`.
+- **Non-blocking backlog:** the status response remains a stable map; the public security matcher remains prefix-based; public pagination/photos and production hardening remain separate decisions/epics.
 
 ## Epic 2 — Administrative identity
 

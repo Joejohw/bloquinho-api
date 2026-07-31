@@ -34,9 +34,9 @@ Internal `BIGINT` IDs are database implementation details and foreign keys. Publ
 - **Attributes:** internal `id`, `publicId`, name, business name, description, phone, WhatsApp, email, Instagram, city, state, active, timestamps.
 - **Relationships:** many-to-many with categories.
 - **Invariants:** unique public ID; only active professionals in active categories are public; public DTO omits internal ID, phone, email, active, and timestamps.
-- **Lifecycle:** category-scoped public read exists; administration and individual profile are `PLANEJADO_MVP`.
+- **Lifecycle:** category-scoped and individual active-profile public reads exist; administration remains `PLANEJADO_MVP`.
 - **History/retention:** deactivation must retain approved audit/analytics history.
-- **Evidence:** V1/V3, professional domain/JPA/repository/use case/DTO/integration test.
+- **Evidence:** V1/V3, professional domain/JPA/repository use cases, minimized DTOs, controller/security tests, and PostgreSQL profile integration.
 
 ### ProfessionalCategoryLink — `IMPLEMENTADO` (schema/queries)
 

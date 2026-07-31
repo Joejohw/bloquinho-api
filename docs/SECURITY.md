@@ -14,11 +14,11 @@
 | Login/JWT/refresh/logout | `PLANEJADO_MVP` | No endpoint or implementation exists. |
 | Swagger | `IMPLEMENTADO` | GET `/v3/api-docs/**`, `/swagger-ui/**`, and `/swagger-ui.html` is public; other methods are denied. |
 | Actuator | `IMPLEMENTADO` | Only health is exposed and public for GET; other paths are also denied by the filter chain. |
-| Safe errors | `PARCIALMENTE_IMPLEMENTADO` | Problem Details handlers exist, but framework/security/path validation are not fully standardized. |
+| Safe errors | `IMPLEMENTADO` for the current public API | Validation, missing/inactive resources, unmapped MVC routes, unsupported methods, and unexpected failures have safe Problem Details handling; future endpoints must retain the same policy. |
 
 There is no real authentication, administrator, login endpoint, JWT, HTTP Basic, form login, OAuth flow, or default password. Admin routes are unavailable to everyone. The empty user manager deliberately suppresses Spring Boot's generated default credential.
 
-`/api/v1/public/**` is a prefix allowlist for every HTTP method. It does not create a controller, so an unmapped future path is not administrative, but any future controller under that prefix becomes security-public automatically. Unsupported/unmapped public requests currently reach MVC and are converted to 500 by the generic exception handler; correcting those framework errors remains part of broader error standardization.
+`/api/v1/public/**` is a prefix allowlist for every HTTP method. It does not create a controller, so an unmapped future path is not administrative, but any future controller under that prefix becomes security-public automatically. Unsupported and unmapped public requests reach MVC and are converted to deterministic 405 and 404 Problem Details respectively. The broad prefix is a non-blocking governance risk: every future controller placed below it becomes public automatically and must receive an explicit security review.
 
 ## CORS behavior
 

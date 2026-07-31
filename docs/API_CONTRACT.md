@@ -62,13 +62,39 @@ Returns 404 for unknown/inactive category and 200 with empty `professionals`. A 
 
 Internal ID, active, timestamps, email, and alternate phone are omitted.
 
+### `GET /api/v1/public/professionals/{publicId}` — `IMPLEMENTADO` / RF-PRO-008,009
+
+Public. `publicId` has exactly 21 URL-safe characters from the current public ID alphabet. Returns only an active professional and their related active categories ordered by name:
+
+```json
+{
+  "data": {
+    "publicId": "Pro000000000000000002",
+    "name": "Lumen Instalações",
+    "businessName": "Lumen Instalações Demo",
+    "description": "Demonstração de serviços elétricos e instalação de climatização.",
+    "whatsapp": "5500000000002",
+    "instagram": "https://instagram.com/bloquinho_demo_lumen",
+    "city": "Campinas",
+    "state": "SP",
+    "categories": [{
+      "publicId": "Ctg000000000000000009",
+      "name": "Ar-condicionado",
+      "slug": "ar-condicionado"
+    }]
+  }
+}
+```
+
+A professional with no active category returns an empty `categories` list. Malformed public ID returns 400; missing and inactive professionals are indistinguishable and return 404; unsupported methods return 405. Internal ID, active, phone, email, timestamps, inactive categories, and association data are omitted.
+
 ### `GET /actuator/health` — `IMPLEMENTADO` / RF-PUB-002
 
 Public GET under current security; reports Actuator health. It is the only Actuator endpoint exposed by configuration. Requests such as `/actuator/env`, `/actuator/beans`, and `/actuator/configprops` are not exposed and are intercepted by default-deny as 403 without returning their data. Production access is `PLANEJADO_MVP`.
 
 ### OpenAPI/Swagger — `IMPLEMENTADO` / RF-PUB-003
 
-Current GET access: `/v3/api-docs/**`, `/swagger-ui/**`, `/swagger-ui.html`; non-GET requests are denied. `/v3/api-docs` documents the implemented public status and category operations and no absent administrative controller. Production restriction is `PLANEJADO_MVP`.
+Current GET access: `/v3/api-docs/**`, `/swagger-ui/**`, `/swagger-ui.html`; non-GET requests are denied. `/v3/api-docs` documents all four implemented public operations, their parameters, response codes and public response schemas, and no absent administrative controller. Production restriction is `PLANEJADO_MVP`.
 
 The current security allowlist uses the broad `/api/v1/public/**` prefix for all methods. MVC failures that pass this boundary are standardized:
 
@@ -97,7 +123,7 @@ No password hash, raw refresh secret, internal ID, or security metadata may be r
 | `GET /api/v1/admin/categories/{publicId}` | RF-CAT-010 / `PLANEJADO_MVP` | Authorized admin; valid 21-character public ID. | 200 admin detail; 400/401/403/404. | Safe/idempotent. |
 | `PATCH /api/v1/admin/categories/{publicId}` | RF-CAT-005–008 / `PLANEJADO_MVP` | Partial name/slug/description/active/approved position; at least one field; unique slug. | 200 updated detail; 400/401/403/404/409. | Idempotent for the same desired field values. |
 
-## Planned professional administration/public profile
+## Planned professional administration
 
 | Endpoint | Req. / state | Request and validation | Response / codes | Pagination / idempotency |
 |---|---|---|---|---|
@@ -106,9 +132,6 @@ No password hash, raw refresh secret, internal ID, or security metadata may be r
 | `GET /api/v1/admin/professionals/{publicId}` | RF-PRO-003 / `PLANEJADO_MVP` | Authorized admin; valid public ID. | 200 admin detail/associations; 400/401/403/404. | Safe/idempotent. |
 | `PATCH /api/v1/admin/professionals/{publicId}` | RF-PRO-005–007 / `PLANEJADO_MVP` | Partial permitted fields/active; contact and length validation. | 200 updated detail; 400/401/403/404/409. | Idempotent for same desired values. |
 | `PUT /api/v1/admin/professionals/{publicId}/categories` | RF-ASC-001–005 / `PLANEJADO_MVP` | `{categoryPublicIds:[...], ordering?:[...]}`; unique existing categories; ordering only if approved. | 200 resulting associations; 400/401/403/404/409. | Atomic replacement and idempotent. |
-| `GET /api/v1/public/professionals/{publicId}` | RF-PRO-008,009 / `PLANEJADO_MVP` | Public; valid public ID; professional must be active. | 200 minimized profile and active categories; 400/404. | Unpaged; safe/idempotent. |
-
-The public profile may expose name, business name, description, approved WhatsApp/Instagram, city/state, and active categories. Phone/email/internal/admin fields remain excluded.
 
 ## Planned referral links
 

@@ -39,10 +39,15 @@ class ProfessionalRepositoryAdapterIntegrationTest {
 
     @Test
     void appliesV3AndFiltersActiveRelationshipsInNameOrder() {
-        assertThat(jdbcTemplate.queryForObject(
-            "SELECT COUNT(*) FROM flyway_schema_history WHERE version = '3' AND success = TRUE",
-            Integer.class
-        )).isEqualTo(1);
+        assertThat(jdbcTemplate.queryForList(
+            """
+            SELECT version
+            FROM flyway_schema_history
+            WHERE success = TRUE
+            ORDER BY installed_rank
+            """,
+            String.class
+        )).containsExactly("1", "2", "3");
 
         var initial = repository.findAllActiveByCategorySlugOrderByName("eletrica");
         assertThat(initial).extracting("name")
@@ -61,5 +66,69 @@ class ProfessionalRepositoryAdapterIntegrationTest {
             "eletrica"
         );
         assertThat(repository.findAllActiveByCategorySlugOrderByName("eletrica")).isEmpty();
+    }
+
+    @Test
+    void findsActiveProfileWithMappedFieldsAndActiveCategoriesInNameOrder() {
+        assertThat(repository.findActiveProfileByPublicId("Pro000000000000000002"))
+            .hasValueSatisfying(profile -> {
+                assertThat(profile.professional().publicId()).isEqualTo("Pro000000000000000002");
+                assertThat(profile.professional().name()).isEqualTo("Lumen Instalações");
+                assertThat(profile.professional().businessName())
+                    .isEqualTo("Lumen Instalações Demo");
+                assertThat(profile.professional().description())
+                    .isEqualTo("Demonstração de serviços elétricos e instalação de climatização.");
+                assertThat(profile.professional().whatsapp()).isEqualTo("5500000000002");
+                assertThat(profile.professional().instagram())
+                    .isEqualTo("https://instagram.com/bloquinho_demo_lumen");
+                assertThat(profile.professional().city()).isEqualTo("Campinas");
+                assertThat(profile.professional().state()).isEqualTo("SP");
+                assertThat(profile.categories()).extracting("name")
+                    .containsExactly("Ar-condicionado", "Elétrica");
+            });
+    }
+
+    @Test
+    void doesNotFindInactiveProfile() {
+        jdbcTemplate.update(
+            "UPDATE professionals SET active = FALSE WHERE public_id = ?",
+            "Pro000000000000000002"
+        );
+
+        assertThat(repository.findActiveProfileByPublicId("Pro000000000000000002")).isEmpty();
+    }
+
+    @Test
+    void excludesInactiveProfileCategories() {
+        jdbcTemplate.update(
+            "UPDATE professional_categories SET active = FALSE WHERE slug = ?",
+            "ar-condicionado"
+        );
+
+        assertThat(repository.findActiveProfileByPublicId("Pro000000000000000002"))
+            .hasValueSatisfying(profile -> assertThat(profile.categories())
+                .extracting("name")
+                .containsExactly("Elétrica"));
+    }
+
+    @Test
+    void returnsActiveProfileWithoutCategories() {
+        jdbcTemplate.update(
+            """
+            DELETE FROM professional_category_links
+            WHERE professional_id = (
+              SELECT id FROM professionals WHERE public_id = ?
+            )
+            """,
+            "Pro000000000000000002"
+        );
+
+        assertThat(repository.findActiveProfileByPublicId("Pro000000000000000002"))
+            .hasValueSatisfying(profile -> assertThat(profile.categories()).isEmpty());
+    }
+
+    @Test
+    void doesNotFindUnknownProfile() {
+        assertThat(repository.findActiveProfileByPublicId("Pro000000000000000099")).isEmpty();
     }
 }

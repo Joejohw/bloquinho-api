@@ -12,7 +12,7 @@ class PublicIdGeneratorTest {
 
         for (int i = 0; i < 1_000; i++) {
             var id = generator.generate();
-            assertThat(id).hasSize(PublicIdGenerator.LENGTH).matches("[0-9A-Za-z_-]{21}");
+            assertThat(id).hasSize(PublicIdGenerator.LENGTH).matches(PublicIdGenerator.PATTERN);
             sample.add(id);
         }
 

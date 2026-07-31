@@ -6,7 +6,7 @@ This matrix connects product objective → functional requirement → business r
 |---|---|---|---|---|---|
 | Show service readiness | RF-PUB-001 | — | `PublicStatusController`; `GET /public/status` | Controller + real filter-chain security | `IMPLEMENTADO` |
 | Expose dependency health | RF-PUB-002 | — | Actuator health | Full-context health + sensitive endpoint denial; production hardening pending | `IMPLEMENTADO` |
-| Discover implemented API | RF-PUB-003 | — | Springdoc/Swagger | Full-context document/UI/method coverage; production restriction pending | `IMPLEMENTADO` |
+| Discover implemented API | RF-PUB-003 | — | Springdoc/Swagger | Full-context paths, methods, response codes, validation patterns, public schemas, UI and method security; production restriction pending | `IMPLEMENTADO` |
 | Standardize public category failures | RF-PUB-004 | RN-026 | `ApiExceptionHandler`; category details | Handler, controller, real MVC validation/security tests | `IMPLEMENTADO` |
 | Protect representations | RF-PUB-005 | RN-001, RN-014 | Public response mappers | DTO omission tests for every public resource | `IMPLEMENTADO` |
 | Standardize public MVC routing failures | RF-PUB-006 | — | `ApiExceptionHandler`; public MVC boundary | Handler + isolated/full MVC 404/405 and `Allow` tests | `IMPLEMENTADO` |
@@ -16,7 +16,7 @@ This matrix connects product objective → functional requirement → business r
 | Manage categories | RF-CAT-003–007, RF-CAT-010 | RN-001, RN-004, RN-008, RN-016, RN-019 | Admin category endpoints | Unit/controller/security/JPA/audit | `PLANEJADO_MVP` |
 | Curate category order | RF-CAT-008 | RN-025 | Endpoint/schema TBD | Ordering conflict/query tests | `DECISAO_PENDENTE` |
 | Read/manage professionals | RF-PRO-002–007 | RN-005, RN-009, RN-016, RN-019 | Admin professional endpoints | Unit/controller/security/JPA/audit | `PLANEJADO_MVP` |
-| Publish individual profile | RF-PRO-008,009 | RN-001, RN-005, RN-014 | `GET /public/professionals/{publicId}` | Controller/JPA/security/privacy | `PLANEJADO_MVP` |
+| Publish individual profile | RF-PRO-008,009 | RN-001, RN-005, RN-014 | `GetPublicProfessionalDetailsUseCase`; `GET /public/professionals/{publicId}` | Unit/controller/PostgreSQL/security/OpenAPI and DTO omission | `IMPLEMENTADO` |
 | Support multiple categories | RF-PRO-010, RF-ASC-003 | RN-006, RN-007 | Current schema/query | Migration/JPA duplicate and join tests | `IMPLEMENTADO` |
 | Manage associations | RF-ASC-001,002,005 | RN-006, RN-010, RN-019 | Association replacement endpoint | Transactional JPA/controller/audit | `PLANEJADO_MVP` |
 | Curate professional order | RF-ASC-004 | RN-025 | Endpoint/schema TBD | Per-category ordering tests | `DECISAO_PENDENTE` |
@@ -39,9 +39,9 @@ This matrix connects product objective → functional requirement → business r
 
 ## Status index
 
-- `IMPLEMENTADO`: RF-PUB-001–006, RF-CAT-001/002, RF-PRO-001/009/010, RF-ASC-003.
-- `PARCIALMENTE_IMPLEMENTADO`: RF-CAT-009 and cross-cutting production/privacy/error concerns beyond the current public category contract.
-- `PLANEJADO_MVP`: all identity; admin category/professional/association; public profile; referral; most tracking/analytics/audit requirements.
+- `IMPLEMENTADO`: RF-PUB-001–006, RF-CAT-001/002, RF-PRO-001/008–010, RF-ASC-003.
+- `PARCIALMENTE_IMPLEMENTADO`: RF-CAT-009 and cross-cutting production/privacy/error concerns beyond the completed current public API.
+- `PLANEJADO_MVP`: all identity; admin category/professional/association; referral; most tracking/analytics/audit requirements.
 - `DECISAO_PENDENTE`: RF-CAT-008, RF-ASC-004, RF-REF-004, RF-TRK-006, ServiceRequest, and decisions catalogued in `OPEN_DECISIONS.md`.
 - `FUTURO`: post-MVP observability/evolution explicitly marked in the requirements and product vision.
 - `FORA_DO_ESCOPO`: the first-MVP exclusions in `PRODUCT_VISION.md`.

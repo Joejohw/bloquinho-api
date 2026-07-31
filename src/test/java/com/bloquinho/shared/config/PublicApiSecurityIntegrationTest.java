@@ -22,6 +22,9 @@ import com.bloquinho.category.api.PublicCategoryController;
 import com.bloquinho.category.application.GetPublicCategoryDetailsUseCase;
 import com.bloquinho.category.application.ListPublicCategoriesUseCase;
 import com.bloquinho.category.application.PublicCategoryDetails;
+import com.bloquinho.professional.api.PublicProfessionalController;
+import com.bloquinho.professional.application.GetPublicProfessionalDetailsUseCase;
+import com.bloquinho.professional.application.PublicProfessionalDetails;
 import com.bloquinho.shared.error.ApiExceptionHandler;
 import java.util.List;
 import java.util.Properties;
@@ -60,11 +63,14 @@ class PublicApiSecurityIntegrationTest {
     @Autowired
     InMemoryUserDetailsManager users;
 
+    @Autowired
+    GetPublicProfessionalDetailsUseCase professionalDetails;
+
     private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
-        reset(listCategories, categoryDetails);
+        reset(listCategories, categoryDetails, professionalDetails);
         mockMvc = MockMvcBuilders.webAppContextSetup(context)
             .apply(springSecurity())
             .build();
@@ -169,6 +175,36 @@ class PublicApiSecurityIntegrationTest {
     }
 
     @Test
+    void permitsPublicProfessionalProfile() throws Exception {
+        var publicId = "Pro000000000000000002";
+        when(professionalDetails.execute(publicId)).thenReturn(new PublicProfessionalDetails(
+            publicId, "Lumen Instalações", null, null, null, null,
+            "Campinas", "SP", List.of()
+        ));
+
+        mockMvc.perform(get("/api/v1/public/professionals/{publicId}", publicId))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.publicId").value(publicId));
+
+        verify(professionalDetails).execute(publicId);
+    }
+
+    @Test
+    void rejectsPostToPublicProfessionalProfileAsMethodNotAllowed() throws Exception {
+        mockMvc.perform(post(
+                "/api/v1/public/professionals/{publicId}",
+                "Pro000000000000000002"
+            ))
+            .andExpect(status().isMethodNotAllowed());
+    }
+
+    @Test
+    void keepsAdministrativeProfessionalRouteBlocked() throws Exception {
+        mockMvc.perform(get("/api/v1/admin/professionals"))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
     void hasNoDefaultUser() {
         assertThatThrownBy(() -> users.loadUserByUsername("user"))
             .isInstanceOf(UsernameNotFoundException.class);
@@ -221,6 +257,7 @@ class PublicApiSecurityIntegrationTest {
         SecurityConfig.class,
         ApiExceptionHandler.class,
         PublicCategoryController.class,
+        PublicProfessionalController.class,
         PublicStatusController.class
     })
     static class TestConfiguration {
@@ -247,6 +284,11 @@ class PublicApiSecurityIntegrationTest {
         @Bean
         GetPublicCategoryDetailsUseCase categoryDetails() {
             return mock(GetPublicCategoryDetailsUseCase.class);
+        }
+
+        @Bean
+        GetPublicProfessionalDetailsUseCase professionalDetails() {
+            return mock(GetPublicProfessionalDetailsUseCase.class);
         }
     }
 }

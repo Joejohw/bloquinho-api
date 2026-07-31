@@ -12,13 +12,13 @@ Each requirement row is traceable and contains: actor; precondition (`Pre`); mai
 
 ### Current baseline
 
-`IMPLEMENTADO`: public status; active category list; active category details by slug; active professionals per category; public DTOs; non-sequential 21-character ID generator; many-to-many category-professional schema; PostgreSQL/Flyway; explicit CORS; default-deny Spring Security; admin `denyAll()`; health/OpenAPI; Testcontainers integration.
+`IMPLEMENTADO`: public status; active category list; active category details by slug; active professionals per category; individual active-professional profile with active categories; public DTOs; non-sequential 21-character ID generator; many-to-many category-professional schema; PostgreSQL/Flyway; explicit CORS; default-deny Spring Security; admin `denyAll()`; health/OpenAPI; Testcontainers integration.
 
-`PARCIALMENTE_IMPLEMENTADO`: category/professional administration has schema but no CRUD; contacts are exposed but not mediated/tracked; validation/error handling does not yet standardize every 400/404; `app_users` has no identity flow.
+`PARCIALMENTE_IMPLEMENTADO`: category/professional administration has schema but no CRUD; contacts are exposed but not mediated/tracked; `app_users` has no identity flow. The current public API contract and its MVC errors are standardized; future surfaces must extend that policy.
 
 ### MVP
 
-`PLANEJADO_MVP`: administrative identity/session, category/professional/association management, curated ordering subject to decision, individual public profile, referral links, minimum visits/contact clicks, analytics, minimum audit, production security and operations.
+`PLANEJADO_MVP`: administrative identity/session, category/professional/association management, curated ordering subject to decision, referral links, minimum visits/contact clicks, analytics, minimum audit, production security and operations.
 
 ### Explicitly outside the first MVP
 
@@ -67,7 +67,7 @@ Service requests are `DECISAO_PENDENTE`; see [Open decisions](OPEN_DECISIONS.md)
 | RF-PRO-005 Edit professional | `PLANEJADO_MVP` / P0 / Administrator | Pre: existing public ID. Main: patch allowed data and audit. Alt: 404/400. Result: updated resource. | RN-019; `PATCH /admin/professionals/{publicId}` | AC: partial update cannot expose/change internal ID. Tests: unit/controller/integration. |
 | RF-PRO-006 Activate professional | `PLANEJADO_MVP` / P0 / Administrator | Pre: inactive professional. Main: activate and audit. Alt: already active. Result: eligible in active categories. | RN-005, RN-019; professional patch | AC: public visibility follows associations/categories. Tests: public integration/audit. |
 | RF-PRO-007 Deactivate professional | `PLANEJADO_MVP` / P0 / Administrator | Pre: active professional. Main: deactivate without delete and audit. Alt: already inactive. Result: hidden everywhere. | RN-005, RN-009, RN-019; professional patch | AC: absent from every public category; history retained. Tests: integration/audit. |
-| RF-PRO-008 Read individual public profile | `PLANEJADO_MVP` / P1 / Visitor | Pre: active professional public ID. Main: return public profile/categories/channels. Alt: missing/inactive 404. Result: public DTO. | RN-001, RN-005, RN-014; `GET /public/professionals/{publicId}` | AC: no private/admin fields. Tests: use case/controller/JPA/security. |
+| RF-PRO-008 Read individual public profile | `IMPLEMENTADO` / P1 / Visitor | Pre: valid active professional public ID. Main: return minimized profile and active categories ordered by name. Alt: malformed ID 400; missing/inactive 404; no active category returns an empty list; unsupported method 405. Result: public DTO. | RN-001, RN-005, RN-014; `GET /public/professionals/{publicId}` | AC: no private/admin fields or inactive categories; missing/inactive are indistinguishable. Tests: use case/controller/PostgreSQL/security/OpenAPI. |
 | RF-PRO-009 Expose only public contacts | `IMPLEMENTADO` / P0 / System | Pre: category response. Main: map WhatsApp/Instagram; omit phone/email. Alt: optional values null. Result: minimized DTO. | RN-014; public category/profile | AC: existing controller proves omissions; extend profile tests. |
 | RF-PRO-010 Support multiple categories | `IMPLEMENTADO` / P0 / Administrator/System | Pre: professional/category records. Main: persist N:N associations. Alt: duplicate rejected. Result: one professional in many categories. | RN-006, RN-007; association endpoint | AC: composite PK exists; management flow planned. Tests: migration/current query plus management integration. |
 
@@ -263,12 +263,12 @@ The MVP is complete only when every applicable item is evidenced:
 
 - [ ] Administrative authentication, active-user enforcement, short access credential, refresh rotation, logout, and revocation.
 - [ ] Category, professional, and association management with activation/deactivation and approved ordering.
-- [ ] Existing public catalog plus standardized 400/404 and individual public professional profile.
+- [x] Existing public catalog plus standardized 400/404/405 and individual public professional profile.
 - [ ] Referral-link creation, lifecycle, category scope, and contextual public access.
 - [ ] Visit and WhatsApp/Instagram click recording under approved privacy/reliability policies.
 - [ ] Period-filtered overview and metrics by link, category, professional, and channel, including conversion.
 - [ ] Minimum administrative/security audit.
-- [ ] Security/CORS/input/error behavior covered by tests and OpenAPI aligned.
+- [x] Current public API security/CORS/input/error behavior covered by tests and OpenAPI aligned.
 - [ ] Unit, controller, security, and PostgreSQL integration tests pass through `clean verify`.
 - [ ] Real production-approved data and an explicit strategy preventing demo data in production.
 - [ ] Production profile/configuration, external secrets, Swagger/Actuator hardening.

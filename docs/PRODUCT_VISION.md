@@ -39,9 +39,9 @@ Deliver a secure end-to-end funnel in which Marcos can authenticate, manage cate
 
 ## Current evidence
 
-`IMPLEMENTADO`: public status, active-category listing, active category lookup by slug, active professionals per category, public DTOs, 21-character public ID generator, PostgreSQL/Flyway, default-deny security, explicit CORS, health/OpenAPI, and Testcontainers coverage. Evidence is in `src/main`, migrations V1–V3, and current tests.
+`IMPLEMENTADO`: public status, active-category listing, active category lookup by slug, active professionals per category, individual active-professional profile, public DTOs, 21-character public ID generator, PostgreSQL/Flyway, default-deny security, explicit CORS, health/OpenAPI, and Testcontainers coverage. Evidence is in `src/main`, migrations V1–V3, and current tests.
 
-`PARCIALMENTE_IMPLEMENTADO`: the public catalog exposes WhatsApp and Instagram values but has no individual profile, referral link, redirect, visit, or click tracking. `app_users` exists only as a table; administrative routes are `denyAll()`.
+`PARCIALMENTE_IMPLEMENTADO`: the public catalog exposes WhatsApp and Instagram values but has no referral link, redirect, visit, or click tracking. `app_users` exists only as a table; administrative routes are `denyAll()`.
 
 ## Expected outcomes and success metrics
 
