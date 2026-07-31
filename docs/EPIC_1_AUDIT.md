@@ -1,5 +1,7 @@
 # Epic 1 final audit
 
+> **Documento histórico.** Esta auditoria registra o fechamento do Épico 1 a partir de `c416d69` mais alterações locais posteriormente consolidadas no commit `5ccd280`. Consulte [CURRENT_STATE.md](CURRENT_STATE.md) para o estado canônico atual.
+
 ## 1. Objective and audited state
 
 This audit closes Epic 1 — public API by comparing controllers, application use cases, domain ports, persistence, validation, security, HTTP contracts, OpenAPI, tests, and documentation.

@@ -1,5 +1,7 @@
 # Foundation audit
 
+> **Documento histórico.** Esta auditoria registra a fundação observada nos commits citados abaixo e não representa o estado atual. O catálogo público mencionado como próximo incremento já foi implementado. Consulte [CURRENT_STATE.md](CURRENT_STATE.md) para o estado canônico no commit `5ccd280`.
+
 ## Scope
 
 The `bloquinho-api`, `bloquinho-admin`, and `bloquinho-web` repositories were fully validated from commits `cffe339`, `8738b6e`, and `41fd415`. All were on `main`, clean at the start, and had no configured remotes.
