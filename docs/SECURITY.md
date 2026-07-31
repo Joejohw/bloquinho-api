@@ -9,13 +9,31 @@
 | Admin protection | `PARCIALMENTE_IMPLEMENTADO` | `/api/v1/admin/**` is completely `denyAll()`, not authenticated access. |
 | CORS | `IMPLEMENTADO` | Two configured exact origins, explicit methods/headers; OPTIONS permitted. |
 | CSRF | `IMPLEMENTADO` | Disabled; token/session design must reassess this choice. |
+| Session | `PARCIALMENTE_IMPLEMENTADO` | No custom policy; Spring Security's default `IF_REQUIRED` applies, but current flows do not authenticate or intentionally create sessions. |
 | User store | `PARCIALMENTE_IMPLEMENTADO` | Empty `InMemoryUserDetailsManager`; no user credential exists. |
 | Login/JWT/refresh/logout | `PLANEJADO_MVP` | No endpoint or implementation exists. |
-| Swagger | `IMPLEMENTADO` | GET Swagger/OpenAPI is currently public. |
-| Actuator | `IMPLEMENTADO` | Only health is exposed and public for GET. |
+| Swagger | `IMPLEMENTADO` | GET `/v3/api-docs/**`, `/swagger-ui/**`, and `/swagger-ui.html` is public; other methods are denied. |
+| Actuator | `IMPLEMENTADO` | Only health is exposed and public for GET; other paths are also denied by the filter chain. |
 | Safe errors | `PARCIALMENTE_IMPLEMENTADO` | Problem Details handlers exist, but framework/security/path validation are not fully standardized. |
 
-There is no real authentication, administrator, login endpoint, JWT/Basic/OAuth flow, or default password. Admin routes are unavailable to everyone.
+There is no real authentication, administrator, login endpoint, JWT, HTTP Basic, form login, OAuth flow, or default password. Admin routes are unavailable to everyone. The empty user manager deliberately suppresses Spring Boot's generated default credential.
+
+`/api/v1/public/**` is a prefix allowlist for every HTTP method. It does not create a controller, so an unmapped future path is not administrative, but any future controller under that prefix becomes security-public automatically. Unsupported/unmapped public requests currently reach MVC and are converted to 500 by the generic exception handler; correcting those framework errors remains part of broader error standardization.
+
+## CORS behavior
+
+- exact origins: `${ADMIN_FRONTEND_URL:http://localhost:4200}` and `${PUBLIC_FRONTEND_URL:http://localhost:4300}`;
+- methods: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS`;
+- headers: `Content-Type`, `Authorization`, `Accept`;
+- credentials are not enabled and wildcards are not used;
+- `OPTIONS /**` is security-permitted, while Spring CORS still rejects a preflight from an unlisted origin;
+- a request carrying an unlisted `Origin` is rejected without `Access-Control-Allow-Origin`.
+
+## Profiles
+
+- `local` is the default. It uses the base PostgreSQL configuration (localhost defaults), Flyway V1–V3 including demo seeds, public Swagger/OpenAPI, health-only Actuator exposure, and the two configurable CORS origins. Its only profile-specific override disables JPA SQL display.
+- `test` only sets `spring.flyway.enabled=false`. It is not automatically activated by the current Maven suite. Full integration tests run with the default `local` profile, replace datasource properties with Testcontainers, and therefore execute Flyway.
+- no production profile exists. Production must disable or protect Swagger UI, restrict OpenAPI, retain only required health access, require CORS values without localhost defaults, externalize database/secrets, and prevent demo data. This remains `PLANEJADO_MVP`; no speculative profile was added.
 
 ## MVP security controls
 
@@ -37,6 +55,6 @@ Before real tracking, approve lawful basis/consent, purpose, minimized fields, I
 
 ## Required evidence
 
-`PLANEJADO_MVP`: unit tests for token/password rules; controller tests for 400/401/403; full filter-chain tests for public/admin/Swagger/Actuator/CORS/CSRF policy; PostgreSQL integration for refresh revocation and audit; secret/configuration checks; brute-force controls; log/error disclosure checks.
+Current filter-chain tests cover public/admin/default denial, empty users, Swagger/OpenAPI, Actuator and CORS. `PLANEJADO_MVP`: token/password rules; 401 behavior after authentication exists; PostgreSQL refresh revocation and audit; production profile and secret checks; brute-force controls; log/error disclosure checks.
 
 Production readiness also requires a production profile, external secrets, TLS/reverse-proxy policy, backup/restore, deployment, observability, and incident ownership.

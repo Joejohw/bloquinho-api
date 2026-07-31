@@ -200,8 +200,12 @@ The detailed entity/invariant/retention model is in [Domain model](DOMAIN_MODEL.
 
 Spring Security currently provides explicit public allowlists, CORS, OPTIONS, and default/admin denial; it does not authenticate. Identity and production hardening are planned in [Security](SECURITY.md).
 
+The current chain disables CSRF, keeps Spring Security's default `IF_REQUIRED` session policy, has an empty in-memory user manager, and configures neither HTTP Basic, form login nor JWT. GET documentation and health are public; only health is exposed through Actuator. Full-context tests exercise these technical endpoints with the real filter chain and PostgreSQL Testcontainers.
+
+The default `local` profile supplies the runtime baseline. Although `application-test.yml` exists, Maven does not activate it automatically; integration tests override the datasource dynamically and run Flyway under the default profile. No production profile exists yet.
+
 Operational baseline:
 
 - `IMPLEMENTADO`: Java 21, Spring Boot 4.1, Maven Wrapper 3.8.7, PostgreSQL 18, Flyway, Docker build, Compose database, CI `clean verify`, Testcontainers, Actuator health, Springdoc.
-- `PLANEJADO_MVP`: production profile/secrets, deploy/rollback, backup/restore, structured logs, correlation ID, metrics, audit, Swagger/Actuator restriction.
+- `PLANEJADO_MVP`: production profile/secrets, deploy/rollback, backup/restore, structured logs, correlation ID, metrics, audit, production Swagger/OpenAPI restriction and health access hardening.
 - `FUTURO`: evidence-based alerting and any architecture expansion; microservices and messaging infrastructure are outside the first MVP.

@@ -1,5 +1,8 @@
 package com.bloquinho.shared.config;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -8,6 +11,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -37,6 +41,8 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @SpringJUnitWebConfig(PublicApiSecurityIntegrationTest.TestConfiguration.class)
 class PublicApiSecurityIntegrationTest {
@@ -48,6 +54,9 @@ class PublicApiSecurityIntegrationTest {
 
     @Autowired
     GetPublicCategoryDetailsUseCase categoryDetails;
+
+    @Autowired
+    InMemoryUserDetailsManager users;
 
     private MockMvc mockMvc;
 
@@ -104,19 +113,85 @@ class PublicApiSecurityIntegrationTest {
     }
 
     @Test
-    void keepsAdministrativeEndpointsBlocked() throws Exception {
+    void blocksAdministrativeGet() throws Exception {
         mockMvc.perform(get("/api/v1/admin/categories"))
             .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void blocksAdministrativePost() throws Exception {
+        mockMvc.perform(post("/api/v1/admin/categories"))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void blocksUnknownAdministrativeRoute() throws Exception {
+        mockMvc.perform(get("/api/v1/admin/not-mapped"))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void blocksUnknownRouteOutsidePublicPrefixes() throws Exception {
+        mockMvc.perform(get("/not-mapped"))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void leavesUnmappedPublicRouteToMvc() throws Exception {
+        mockMvc.perform(get("/api/v1/public/not-mapped"))
+            .andExpect(result -> assertThat(result.getResponse().getStatus()).isNotEqualTo(403));
+    }
+
+    @Test
+    void doesNotConvertUnsupportedPublicMethodToForbidden() throws Exception {
+        mockMvc.perform(post("/api/v1/public/categories"))
+            .andExpect(result -> assertThat(result.getResponse().getStatus()).isNotEqualTo(403));
+    }
+
+    @Test
+    void hasNoDefaultUser() {
+        assertThatThrownBy(() -> users.loadUserByUsername("user"))
+            .isInstanceOf(UsernameNotFoundException.class);
     }
 
     @Test
     void permitsConfiguredCorsPreflight() throws Exception {
         mockMvc.perform(options("/api/v1/public/categories")
                 .header("Origin", "http://localhost:4300")
-                .header("Access-Control-Request-Method", "GET"))
+                .header("Access-Control-Request-Method", "GET")
+                .header("Access-Control-Request-Headers", "Authorization, Content-Type"))
             .andExpect(status().isOk())
             .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:4300"))
-            .andExpect(header().string("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS"));
+            .andExpect(header().string("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS"))
+            .andExpect(header().string("Access-Control-Allow-Headers", containsString("Authorization")))
+            .andExpect(header().string("Access-Control-Allow-Headers", containsString("Content-Type")))
+            .andExpect(header().doesNotExist("Access-Control-Allow-Credentials"));
+    }
+
+    @Test
+    void permitsConfiguredAdministrativeOrigin() throws Exception {
+        mockMvc.perform(options("/api/v1/admin/categories")
+                .header("Origin", "http://localhost:4200")
+                .header("Access-Control-Request-Method", "POST"))
+            .andExpect(status().isOk())
+            .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:4200"));
+    }
+
+    @Test
+    void doesNotAuthorizeUnknownCorsOrigin() throws Exception {
+        mockMvc.perform(get("/api/v1/public/status")
+                .header("Origin", "https://unknown.example"))
+            .andExpect(status().isForbidden())
+            .andExpect(header().doesNotExist("Access-Control-Allow-Origin"));
+    }
+
+    @Test
+    void rejectsPreflightFromUnknownOrigin() throws Exception {
+        mockMvc.perform(options("/api/v1/public/categories")
+                .header("Origin", "https://unknown.example")
+                .header("Access-Control-Request-Method", "GET"))
+            .andExpect(status().isForbidden())
+            .andExpect(header().doesNotExist("Access-Control-Allow-Origin"));
     }
 
     @Configuration

@@ -4,9 +4,9 @@ This matrix connects product objective → functional requirement → business r
 
 | Objective | Requirement | Rule | Use case / endpoint | Expected test | State |
 |---|---|---|---|---|---|
-| Show service readiness | RF-PUB-001 | — | `PublicStatusController`; `GET /public/status` | Controller + security smoke | `IMPLEMENTADO` |
-| Expose dependency health | RF-PUB-002 | — | Actuator health | Context/database health + production security | `IMPLEMENTADO` |
-| Discover implemented API | RF-PUB-003 | — | Springdoc/Swagger | OpenAPI smoke + production restriction | `IMPLEMENTADO` |
+| Show service readiness | RF-PUB-001 | — | `PublicStatusController`; `GET /public/status` | Controller + real filter-chain security | `IMPLEMENTADO` |
+| Expose dependency health | RF-PUB-002 | — | Actuator health | Full-context health + sensitive endpoint denial; production hardening pending | `IMPLEMENTADO` |
+| Discover implemented API | RF-PUB-003 | — | Springdoc/Swagger | Full-context document/UI/method coverage; production restriction pending | `IMPLEMENTADO` |
 | Standardize public category failures | RF-PUB-004 | RN-026 | `ApiExceptionHandler`; category details | Handler, controller, real MVC validation/security tests | `IMPLEMENTADO` |
 | Protect representations | RF-PUB-005 | RN-001, RN-014 | Public response mappers | DTO omission tests for every public resource | `IMPLEMENTADO` |
 | Browse categories | RF-CAT-001 | RN-004 | `ListPublicCategoriesUseCase`; `GET /public/categories` | Unit/controller/security + PostgreSQL active filtering and name ordering | `IMPLEMENTADO` |

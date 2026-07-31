@@ -64,11 +64,13 @@ Internal ID, active, timestamps, email, and alternate phone are omitted.
 
 ### `GET /actuator/health` — `IMPLEMENTADO` / RF-PUB-002
 
-Public GET under current security; reports Actuator health. Production access is `PLANEJADO_MVP`.
+Public GET under current security; reports Actuator health. It is the only Actuator endpoint exposed by configuration. Requests such as `/actuator/env`, `/actuator/beans`, and `/actuator/configprops` are not exposed and are intercepted by default-deny as 403 without returning their data. Production access is `PLANEJADO_MVP`.
 
 ### OpenAPI/Swagger — `IMPLEMENTADO` / RF-PUB-003
 
-Current GET access: `/v3/api-docs/**`, `/swagger-ui/**`, `/swagger-ui.html`. Production restriction is `PLANEJADO_MVP`.
+Current GET access: `/v3/api-docs/**`, `/swagger-ui/**`, `/swagger-ui.html`; non-GET requests are denied. `/v3/api-docs` documents the implemented public status and category operations and no absent administrative controller. Production restriction is `PLANEJADO_MVP`.
+
+The current security allowlist uses the broad `/api/v1/public/**` prefix for all methods. Existing unsupported methods reach MVC rather than being denied as administrative access; the generic error handler still needs separate framework 404/405 standardization.
 
 ## Planned identity
 
