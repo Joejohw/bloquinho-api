@@ -9,7 +9,8 @@ States follow [Scope and requirements](SCOPE_AND_REQUIREMENTS.md). Sequencing is
 - **Dependencies:** none.
 - **Delivered:** Java/Spring modular monolith; Maven Wrapper; PostgreSQL/Flyway V1–V3; CI `clean verify`; Testcontainers; public DTOs; public ID generator; default-deny/CORS base; health and OpenAPI.
 - **Delivered:** malformed category slug returns standardized 400 Problem Details; missing/inactive category remains 404; public status/category access, admin denial, and configured CORS preflight have security tests.
-- **Remaining:** category repository integration; error standardization beyond the current public category contract; demo-data separation; production profiles.
+- **Delivered:** the public category repository has PostgreSQL integration coverage for active filtering, inactive lookup, name ordering, slug lookup, mapping, and Flyway V1–V3.
+- **Remaining:** error standardization beyond the current public category contract; demo-data separation; production profiles.
 - **Acceptance:** baseline green; current public behavior secured/tested; no accidental 500 for client validation; production data/config strategy approved.
 - **Risks:** demo migrations in every environment; incomplete error/security coverage.
 
@@ -18,7 +19,7 @@ States follow [Scope and requirements](SCOPE_AND_REQUIREMENTS.md). Sequencing is
 - **State:** `PARCIALMENTE_IMPLEMENTADO`.
 - **Objective:** complete and harden the direct public catalog before adding write flows.
 - **Dependencies:** Epic 0.
-- **Deliveries:** category JPA integration; remaining OpenAPI/filter-chain coverage; standardized errors for future public surfaces; individual active-professional profile; public contract alignment. Slug validation and minimum public/admin/CORS security coverage are complete.
+- **Deliveries:** remaining OpenAPI/filter-chain coverage; standardized errors for future public surfaces; individual active-professional profile; public contract alignment. Category JPA integration, slug validation, and minimum public/admin/CORS security coverage are complete.
 - **Acceptance:** RF-CAT-001/002, RF-PRO-001/008/009, RF-PUB-001–005 pass unit/controller/security/PostgreSQL tests.
 - **Risks:** backward-compatibility changes to errors; public pagination/photos decisions.
 

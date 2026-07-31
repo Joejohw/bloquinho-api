@@ -9,8 +9,8 @@ This matrix connects product objective → functional requirement → business r
 | Discover implemented API | RF-PUB-003 | — | Springdoc/Swagger | OpenAPI smoke + production restriction | `IMPLEMENTADO` |
 | Standardize public category failures | RF-PUB-004 | RN-026 | `ApiExceptionHandler`; category details | Handler, controller, real MVC validation/security tests | `IMPLEMENTADO` |
 | Protect representations | RF-PUB-005 | RN-001, RN-014 | Public response mappers | DTO omission tests for every public resource | `IMPLEMENTADO` |
-| Browse categories | RF-CAT-001 | RN-004 | `ListPublicCategoriesUseCase`; `GET /public/categories` | Existing unit/controller + JPA/security | `IMPLEMENTADO` |
-| Browse category details | RF-CAT-002, RF-PRO-001 | RN-003–RN-005 | `GetPublicCategoryDetailsUseCase`; `GET /public/categories/{slug}` | Existing unit/controller/professional integration + invalid slug | `IMPLEMENTADO` |
+| Browse categories | RF-CAT-001 | RN-004 | `ListPublicCategoriesUseCase`; `GET /public/categories` | Unit/controller/security + PostgreSQL active filtering and name ordering | `IMPLEMENTADO` |
+| Browse category details | RF-CAT-002, RF-PRO-001 | RN-003–RN-005 | `GetPublicCategoryDetailsUseCase`; `GET /public/categories/{slug}` | Unit/controller + PostgreSQL active/inactive/missing slug and mapping + professional integration + invalid slug | `IMPLEMENTADO` |
 | Guarantee category address | RF-CAT-009 | RN-002, RN-003 | Future category writes | Unique/conflict/concurrency integration | `PARCIALMENTE_IMPLEMENTADO` |
 | Manage categories | RF-CAT-003–007, RF-CAT-010 | RN-001, RN-004, RN-008, RN-016, RN-019 | Admin category endpoints | Unit/controller/security/JPA/audit | `PLANEJADO_MVP` |
 | Curate category order | RF-CAT-008 | RN-025 | Endpoint/schema TBD | Ordering conflict/query tests | `DECISAO_PENDENTE` |
