@@ -8,7 +8,7 @@ Only operations marked `IMPLEMENTADO` exist in code/OpenAPI today. Planned contr
 - Successful resource payloads use `{"data": ...}`; planned paged responses use `data` plus `page`.
 - Resources use 21-character `publicId`; internal IDs are never serialized.
 - Planned admin endpoints require an active authorized administrator.
-- Planned errors use Problem Details: 400 validation, 401 unauthenticated, 403 unauthorized, 404 unavailable/not found, 409 conflict, and 500 safe unexpected error.
+- Errors use Problem Details: 400 validation, 401 unauthenticated, 403 unauthorized, 404 unavailable/not found, 405 unsupported method, 409 conflict, and 500 safe unexpected error.
 - GET is safe/idempotent. PUT is idempotent. PATCH/POST tracking idempotency is stated per endpoint.
 
 ## Implemented
@@ -70,7 +70,12 @@ Public GET under current security; reports Actuator health. It is the only Actua
 
 Current GET access: `/v3/api-docs/**`, `/swagger-ui/**`, `/swagger-ui.html`; non-GET requests are denied. `/v3/api-docs` documents the implemented public status and category operations and no absent administrative controller. Production restriction is `PLANEJADO_MVP`.
 
-The current security allowlist uses the broad `/api/v1/public/**` prefix for all methods. Existing unsupported methods reach MVC rather than being denied as administrative access; the generic error handler still needs separate framework 404/405 standardization.
+The current security allowlist uses the broad `/api/v1/public/**` prefix for all methods. MVC failures that pass this boundary are standardized:
+
+- an unmapped public route returns 404 with `{"type":"about:blank","title":"Resource not found","status":404,"detail":"The requested resource was not found."}`;
+- an unsupported method on an existing public resource returns 405 with `{"type":"about:blank","title":"Method not allowed","status":405,"detail":"The HTTP method is not supported for this resource."}` and preserves the MVC `Allow` header.
+
+Neither case is converted to an unexpected 500 or masked as an administrative 403.
 
 ## Planned identity
 

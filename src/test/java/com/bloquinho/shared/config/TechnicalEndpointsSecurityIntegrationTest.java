@@ -1,5 +1,6 @@
 package com.bloquinho.shared.config;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -20,6 +21,7 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
@@ -82,6 +84,20 @@ class TechnicalEndpointsSecurityIntegrationTest {
         mockMvc.perform(get("/actuator/health"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status").isString());
+    }
+
+    @Test
+    void returnsProblemDetailForMissingPublicResource() throws Exception {
+        mockMvc.perform(get("/api/v1/public/recurso-inexistente"))
+            .andExpect(status().isNotFound())
+            .andExpect(content().contentType("application/problem+json"))
+            .andExpect(jsonPath("$.type").value("about:blank"))
+            .andExpect(jsonPath("$.title").value("Resource not found"))
+            .andExpect(jsonPath("$.status").value(404))
+            .andExpect(jsonPath("$.detail").value("The requested resource was not found."))
+            .andExpect(jsonPath("$.trace").doesNotExist())
+            .andExpect(result -> assertThat(result.getResolvedException())
+                .isInstanceOf(NoResourceFoundException.class));
     }
 
     @ParameterizedTest

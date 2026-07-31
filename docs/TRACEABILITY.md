@@ -9,6 +9,7 @@ This matrix connects product objective → functional requirement → business r
 | Discover implemented API | RF-PUB-003 | — | Springdoc/Swagger | Full-context document/UI/method coverage; production restriction pending | `IMPLEMENTADO` |
 | Standardize public category failures | RF-PUB-004 | RN-026 | `ApiExceptionHandler`; category details | Handler, controller, real MVC validation/security tests | `IMPLEMENTADO` |
 | Protect representations | RF-PUB-005 | RN-001, RN-014 | Public response mappers | DTO omission tests for every public resource | `IMPLEMENTADO` |
+| Standardize public MVC routing failures | RF-PUB-006 | — | `ApiExceptionHandler`; public MVC boundary | Handler + isolated/full MVC 404/405 and `Allow` tests | `IMPLEMENTADO` |
 | Browse categories | RF-CAT-001 | RN-004 | `ListPublicCategoriesUseCase`; `GET /public/categories` | Unit/controller/security + PostgreSQL active filtering and name ordering | `IMPLEMENTADO` |
 | Browse category details | RF-CAT-002, RF-PRO-001 | RN-003–RN-005 | `GetPublicCategoryDetailsUseCase`; `GET /public/categories/{slug}` | Unit/controller + PostgreSQL active/inactive/missing slug and mapping + professional integration + invalid slug | `IMPLEMENTADO` |
 | Guarantee category address | RF-CAT-009 | RN-002, RN-003 | Future category writes | Unique/conflict/concurrency integration | `PARCIALMENTE_IMPLEMENTADO` |
@@ -38,7 +39,7 @@ This matrix connects product objective → functional requirement → business r
 
 ## Status index
 
-- `IMPLEMENTADO`: RF-PUB-001–003/005, RF-CAT-001/002, RF-PRO-001/009/010, RF-ASC-003.
+- `IMPLEMENTADO`: RF-PUB-001–006, RF-CAT-001/002, RF-PRO-001/009/010, RF-ASC-003.
 - `PARCIALMENTE_IMPLEMENTADO`: RF-CAT-009 and cross-cutting production/privacy/error concerns beyond the current public category contract.
 - `PLANEJADO_MVP`: all identity; admin category/professional/association; public profile; referral; most tracking/analytics/audit requirements.
 - `DECISAO_PENDENTE`: RF-CAT-008, RF-ASC-004, RF-REF-004, RF-TRK-006, ServiceRequest, and decisions catalogued in `OPEN_DECISIONS.md`.

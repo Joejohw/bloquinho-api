@@ -127,7 +127,7 @@ Service requests are `DECISAO_PENDENTE`; see [Open decisions](OPEN_DECISIONS.md)
 | RF-AUD-005 Audit association | `PLANEJADO_MVP` / P0 / System | Pre: association change. Main: record professional/category/action. Alt: failed transaction creates no success event. Result: membership history. | RN-019; association PUT | AC: add/remove attributable. Tests: transactional integration. |
 | RF-AUD-006 Audit relevant login | `PLANEJADO_MVP` / P0 / System | Pre: login/security event. Main: record success and policy-approved failures without secrets. Alt: rate-limit event. Result: security evidence. | RN-018, RN-019; login | AC: actor/reference, outcome, time; no credentials. Tests: security/integration. |
 
-### Public foundation — 5 requirements
+### Public foundation — 6 requirements
 
 | ID / title | State / priority / actor | Behavior | Rules / endpoint | Acceptance and expected tests |
 |---|---|---|---|---|
@@ -136,8 +136,9 @@ Service requests are `DECISAO_PENDENTE`; see [Open decisions](OPEN_DECISIONS.md)
 | RF-PUB-003 OpenAPI/Swagger | `IMPLEMENTADO` / P1 / Developer | Pre: application running. Main: expose generated API documentation/UI. Alt: production restriction planned. Result: discoverable implemented operations. | `/v3/api-docs`, `/swagger-ui/**` | AC: GET endpoints are public and docs contain only implemented controllers; production restriction remains pending. Tests: full-context document/UI/method security. |
 | RF-PUB-004 Standard public category 400/404 errors | `IMPLEMENTADO` / P0 / All | Pre: malformed slug or missing/inactive category. Main: return Problem Details. Alt: active valid category preserves success contract. Result: malformed slug 400; missing/inactive category 404; no accidental 500. | RN-026; public category details | AC: path validation returns useful 400, missing/inactive returns 404, use case is not called for malformed input. Tests: handler, controller, real MVC validation/security. |
 | RF-PUB-005 Protect public representation | `IMPLEMENTADO` / P0 / System | Pre: public response. Main: map domain to explicit DTO. Alt: optional nulls. Result: no internal/admin fields. | RN-001, RN-014; all public GETs | AC: current controller tests prove key omissions. Tests: extend to every future DTO. |
+| RF-PUB-006 Standardize MVC routing errors | `IMPLEMENTADO` / P0 / All | Pre: request passes security but has no MVC resource/handler or uses an unsupported method. Main: return safe Problem Details. Alt: supported mapped request continues normally. Result: missing route 404; unsupported method 405 with `Allow`; neither becomes 500. | Public MVC boundary; global error handler | AC: `about:blank`, deterministic title/detail, no internal exception or trace. Tests: handler, isolated MVC/security, full Spring Boot MVC. |
 
-**Functional requirement count: 64.**
+**Functional requirement count: 65.**
 
 ## Business rules
 

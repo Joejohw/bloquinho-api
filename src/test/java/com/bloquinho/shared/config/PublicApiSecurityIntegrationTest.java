@@ -39,7 +39,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -137,15 +139,33 @@ class PublicApiSecurityIntegrationTest {
     }
 
     @Test
-    void leavesUnmappedPublicRouteToMvc() throws Exception {
-        mockMvc.perform(get("/api/v1/public/not-mapped"))
-            .andExpect(result -> assertThat(result.getResponse().getStatus()).isNotEqualTo(403));
+    void returnsProblemDetailForUnmappedPublicRoute() throws Exception {
+        mockMvc.perform(get("/api/v1/public/recurso-inexistente"))
+            .andExpect(status().isNotFound())
+            .andExpect(content().contentType("application/problem+json"))
+            .andExpect(jsonPath("$.type").value("about:blank"))
+            .andExpect(jsonPath("$.title").value("Resource not found"))
+            .andExpect(jsonPath("$.status").value(404))
+            .andExpect(jsonPath("$.detail").value("The requested resource was not found."))
+            .andExpect(jsonPath("$.trace").doesNotExist())
+            .andExpect(result -> assertThat(result.getResolvedException())
+                .isInstanceOf(NoHandlerFoundException.class));
     }
 
     @Test
-    void doesNotConvertUnsupportedPublicMethodToForbidden() throws Exception {
+    void returnsProblemDetailForUnsupportedPublicMethod() throws Exception {
         mockMvc.perform(post("/api/v1/public/categories"))
-            .andExpect(result -> assertThat(result.getResponse().getStatus()).isNotEqualTo(403));
+            .andExpect(status().isMethodNotAllowed())
+            .andExpect(content().contentType("application/problem+json"))
+            .andExpect(header().string("Allow", "GET"))
+            .andExpect(jsonPath("$.type").value("about:blank"))
+            .andExpect(jsonPath("$.title").value("Method not allowed"))
+            .andExpect(jsonPath("$.status").value(405))
+            .andExpect(jsonPath("$.detail")
+                .value("The HTTP method is not supported for this resource."))
+            .andExpect(jsonPath("$.trace").doesNotExist())
+            .andExpect(result -> assertThat(result.getResolvedException())
+                .isInstanceOf(HttpRequestMethodNotSupportedException.class));
     }
 
     @Test
